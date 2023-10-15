@@ -1,0 +1,787 @@
+% Text version of the MATLAB GUI. Can't preview mlapp extension.
+
+classdef cameras < matlab.apps.AppBase
+
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure                       matlab.ui.Figure
+        Intensity                      matlab.ui.control.Label
+        StartCheckerboardButton        matlab.ui.control.Button
+        AllEGButton                    matlab.ui.control.Button
+        CheckerboardCamerasLabel       matlab.ui.control.Label
+        Tree                           matlab.ui.container.CheckBoxTree
+        AllCamerasNode                 matlab.ui.container.TreeNode
+        Camera1Node                    matlab.ui.container.TreeNode
+        Camera2Node                    matlab.ui.container.TreeNode
+        Camera3Node                    matlab.ui.container.TreeNode
+        Camera4Node                    matlab.ui.container.TreeNode
+        Camera5Node                    matlab.ui.container.TreeNode
+        Camera6Node                    matlab.ui.container.TreeNode
+        Camera7Node                    matlab.ui.container.TreeNode
+        Camera8Node                    matlab.ui.container.TreeNode
+        Camera9Node                    matlab.ui.container.TreeNode
+        Camera10Node                   matlab.ui.container.TreeNode
+        Camera11Node                   matlab.ui.container.TreeNode
+        Camera12Node                   matlab.ui.container.TreeNode
+        Camera13Node                   matlab.ui.container.TreeNode
+        Camera14Node                   matlab.ui.container.TreeNode
+        Camera15Node                   matlab.ui.container.TreeNode
+        Camera16Node                   matlab.ui.container.TreeNode
+        Camera17Node                   matlab.ui.container.TreeNode
+        Camera18Node                   matlab.ui.container.TreeNode
+        GoButton                       matlab.ui.control.Button
+        ImagesDirectoryEditField       matlab.ui.control.EditField
+        ImagesDirectoryEditFieldLabel  matlab.ui.control.Label
+        ImagingTypeDropDown            matlab.ui.control.DropDown
+        ImagingTypeDropDownLabel       matlab.ui.control.Label
+        FileTree                       matlab.ui.container.Tree
+        ReadyCamerasButton             matlab.ui.control.Button
+        ofImagesEditField              matlab.ui.control.NumericEditField
+        ofImagesEditFieldLabel         matlab.ui.control.Label
+        OnlyLiveEGButton               matlab.ui.control.Button
+        ExposureEditField              matlab.ui.control.NumericEditField
+        GainEditField                  matlab.ui.control.NumericEditField
+        ExposureEditFieldLabel         matlab.ui.control.Label
+        GainEditFieldLabel             matlab.ui.control.Label
+        LiveViewButton                 matlab.ui.control.Button
+        CameraEditField                matlab.ui.control.NumericEditField
+        CameraEditFieldLabel           matlab.ui.control.Label
+        FileTIFViewer                  matlab.ui.control.UIAxes
+    end
+
+    properties (Access = public)
+        Popout                                            matlab.ui.Figure
+        CloseButton                                       matlab.ui.control.Button
+        LiveImage                                         matlab.ui.control.UIAxes
+        LiveLabel                                         matlab.ui.control.Label
+        CheckerboardButton                                matlab.ui.control.Button
+        %waiting = true;                                  % Waiting to record for checkerboard.
+        Root                                              % Root node.
+        screenSize = get(0, 'ScreenSize');                % Screen size information.
+        button_width = 60;                                % Popout close button width.
+        button_height = 30;                               % Popout close button height.
+        width = 1280;                                     % Image width.
+        height = 800;                                     % Image height.
+        DefaultExposure = 3000;                           % Default exposure value.
+        DefaultGain = 25;                                 % Default gain value.
+        images_folder_path = '';                          % Images folder path for the user.
+        py_script = 'showImg.py'                          % Path for python unpacking script.
+        nodes = zeros(1, 18);                             % List of checked checkerboard nodes.
+        % pi1 = raspi('192.168.1.201', 'afdl', 'afdl');     % Camera 1
+        % pi2 = raspi('192.168.1.202', 'afdl', 'afdl');     % Camera 2
+        pi1 = raspi('192.168.1.203', 'afdl', 'afdl');     % Camera 3
+        % pi4 = raspi('192.168.1.204', 'afdl', 'afdl');     % Camera 4
+        % pi5 = raspi('192.168.1.205', 'afdl', 'afdl');     % Camera 5
+        % pi6 = raspi('192.168.1.206', 'afdl', 'afdl');     % Camera 6
+        pi2 = raspi('192.168.1.207', 'afdl', 'afdl');     % Camera 7
+        % pi8 = raspi('192.168.1.208', 'afdl', 'afdl');     % Camera 8
+        % pi9 = raspi('192.168.1.209', 'afdl', 'afdl');     % Camera 9
+        % pi10 = raspi('192.168.1.210', 'afdl', 'afdl');    % Camera 10
+        % pi11 = raspi('192.168.1.211', 'afdl', 'afdl');    % Camera 11
+        pi3 = raspi('192.168.1.212', 'afdl', 'afdl');    % Camera 12
+        % pi13 = raspi('192.168.1.213', 'afdl', 'afdl');    % Camera 13
+        % pi14 = raspi('192.168.1.214', 'afdl', 'afdl');    % Camera 14
+        % pi15 = raspi('192.168.1.215', 'afdl', 'afdl');    % Camera 15
+        pi4 = raspi('192.168.1.216', 'afdl', 'afdl');    % Camera 16
+        % pi17 = raspi('192.168.1.217', 'afdl', 'afdl');    % Camera 17
+        % pi18 = raspi('192.168.1.218', 'afdl', 'afdl');    % Camera 18
+    end
+    
+    methods (Access = public)
+        % Returns a pi object.
+        function rpi = GetPi(app, index)
+            cameras = {app.pi1, app.pi2, app.pi3, app.pi4};%, app.pi5, app.pi6, app.pi7, app.pi8, app.pi9, ...
+                %app.pi10, app.pi11, app.pi12, app.pi13, app.pi14, app.pi15, app.pi16, app.pi17, app.pi18};
+            rpi = cameras{index};
+        end
+        
+        % Creates the close button for the popout
+        function createClose(app)
+            app.CloseButton = uibutton(app.Popout, 'push');
+            app.CloseButton.ButtonPushedFcn = createCallbackFcn(app, @ClosePopout, true);
+            app.CloseButton.Position = [(app.screenSize(3) - app.button_width) / 2, app.button_height, app.button_width, app.button_height];
+            app.CloseButton.Text = 'Close';
+        end
+        
+        % Closes the popout.
+        function ClosePopout(app, ~)
+            delete(app.Popout);
+        end
+        
+        % Gets a new image for the LiveImage axes.
+        function img = GetImage(app, index)
+            curr_pi = GetPi(app, index);
+            % Take and retrieve image.
+            system(curr_pi,'sh ~/Documents/raspi_commands.sh');
+            getFile(curr_pi, '/home/afdl/Documents/Live/test.tif', sprintf('%s', app.images_folder_path));
+
+            % Convert image to something displayable.
+            fID = fopen(sprintf('%s/test.tif', app.images_folder_path));
+
+            rawImg = fread(fID, [app.width app.height], 'uint16');
+            fclose(fID);
+            img = rawImg;
+        end
+
+        % Displays the live feed.
+        function DisplayLiveFeed(app)
+            % Continuously display a new image while the popout is open.
+            while isvalid(app.Popout)
+                img = GetImage(app, app.CameraEditField.Value);
+                imshow(img', [0 1024], 'Parent', app.LiveImage);
+                app.LiveLabel.Text = sprintf('Max Intensity: %d', max(img(:)));
+                drawnow;
+            end
+        end
+        
+        % Sets the exposure and gain and all cameras.
+        % Type 0 == all
+        % Type 1 == individual
+        function SetExposureAndGain(app, exposure, gain, type)
+            cameras = {app.pi1, app.pi2, app.pi3, app.pi4};%, app.pi5, app.pi6, app.pi7, app.pi8, app.pi9, ...
+                %app.pi10, app.pi11, app.pi12, app.pi13, app.pi14, app.pi15, app.pi16, app.pi17, app.pi18};
+            command = sprintf('v4l2-ctl -d /dev/video0 --set-ctrl=exposure=%d --set-ctrl=gain=%d --set-fmt-video=width=1280,height=800'...
+                , exposure, gain);
+            if type == 0
+                for i = 1:length(cameras)
+                    system(cameras{i}, command);
+                end
+            else
+                system(cameras{app.CameraEditField.Value}, command);
+            end
+        end
+        
+        % Creates the file directory.
+        function popTree(app, start_point)
+            % Root
+            app.Root = uitreenode(app.FileTree, 'Text', start_point);
+            % Get the contents of start_point
+            folder = start_point;
+            contents = dir(folder);
+
+            % Loop through directories and add to tree.
+            for i = 1:length(contents)
+                if contents(i).isdir && ~startsWith(contents(i).name, '.')
+                    dirNode = uitreenode(app.Root, 'Text', contents(i).name, 'NodeData', contents(i).name);
+                    % Populates subdirectories inside of your current
+                    % folder.
+                    popDir(app, dirNode, folder, dirNode.Text);
+                    continue;
+                end
+                if ~startsWith(contents(i).name, '.')
+                    % Populates files in directory.
+                    fileNode = uitreenode(app.Root, 'Text', contents(i).name, 'NodeData', 'file');
+                    fileNode.Parent = app.Root;
+                end
+
+            end
+        end
+        
+        % Populates files/subdirectories of directory.
+        function popDir(app, dirNode, folder, dirName)
+            % Get directory folder contents.
+            folder_path = fullfile(folder, dirName);
+            contents = dir(folder_path);
+            for i = 1:length(contents)
+                name = contents(i).name;
+                if ~startsWith(name, '.')
+                    if contents(i).isdir
+                        % Create a subdirectory node
+                        subDirNode = uitreenode(dirNode, 'Text', name, 'NodeData', name);
+                        % Populates subdirectory.
+                        popDir(app, subDirNode, folder_path, subDirNode.Text);
+                    else
+                        % Create a file node
+                        fileNode = uitreenode(dirNode, 'Text', name, 'NodeData', 'file');
+                        fileNode.Parent = dirNode;
+                    end
+                end
+            end 
+        end
+
+        function [fullpath] = dirchk(app, fullpath)
+            %DIRCHK Check that path exists and create if necessary.
+            [path, file, ext] = fileparts(fullpath);
+            if isempty(ext), path = fullfile(path,file); end
+            if ~exist(path, 'dir')
+                mkdir(path);
+            end
+        end
+        
+        % Raises error if no image directory entered.
+        function EnterImageDir(app)
+            app.ImagesDirectoryEditField.BackgroundColor = [0.85, 0.33, 0.10];
+            pause(1);
+            app.ImagesDirectoryEditField.BackgroundColor = [1, 1, 1];
+        end
+
+        % Runs python script to unpack raw file.
+        function run_python(app, saveFolder, nImgs)
+            system(sprintf('python %s %s %d', app.py_script, saveFolder, nImgs));
+        end
+        
+        % Remakes the file tree.
+        function redrawTree(app)
+            try
+                app.Root.delete;
+                popTree(app, app.images_folder_path);
+            catch
+                disp('Tree empty.')
+            end
+        end
+
+        function send_signal(app, i)
+            system(GetPi(app, i), 'cd Documents; sh raw_photo.sh');
+        end
+
+    end
+    
+
+    % Callbacks that handle component events
+    methods (Access = private)
+
+        % Code that executes after component creation
+        function startupFcn(app)
+            % Sets default exposure and gain on startup.
+            SetExposureAndGain(app, app.DefaultExposure, app.DefaultGain, 0);
+            % Hide checkerboard button
+            %app.StartCheckerboardButton.Visible = 'off';
+            % Populate the checkerboard nodes.
+            % try
+            %     i = 1;
+            %     % Loop while you can
+            %     while GetPi(app, i)
+            %         % If you didn't fail to get index, add a camera node
+            %         % for it.
+            %         child_node = uitreenode(app.AllCamerasNode, 'Text', sprintf('Camera %d', i));
+            %         i = i + 1;
+            %     end
+            % catch
+            %     disp('Tree populated.')
+            % end
+        end
+
+        % Button pushed function: LiveViewButton
+        function LiveViewButtonPushed(app, event)
+            % Displays live view. Checks to ensure that an image directory
+            % has been entered.
+            if ~strcmp(app.images_folder_path, '')
+                % Popout
+                app.Popout = uifigure('Name', 'Live View', 'Resize', 'on');
+                % Make the popout fullscreen with borders
+                app.Popout.Position = [0, 50, app.screenSize(3), app.screenSize(4)-80];
+                % Close button
+                createClose(app);
+                % Create image axes on popout
+                app.LiveImage = uiaxes(app.Popout);
+                app.LiveImage.Position = [0.2 * app.screenSize(3), 0.1 * app.screenSize(4), 1280, 800];
+                % Set label
+                app.LiveLabel = uilabel(app.Popout);
+                app.LiveLabel.HorizontalAlignment = 'center';
+                app.LiveLabel.Position = [app.screenSize(3)/2 - (app.button_height*5), app.button_height*2, app.button_height*10, app.button_height];
+                app.LiveLabel.FontSize = 18;
+                % Display the live camera feed
+                DisplayLiveFeed(app);
+            else
+                EnterImageDir(app);
+            end
+        end
+
+        % Button pushed function: OnlyLiveEGButton
+        function OnlyLiveEGButtonPushed(app, event)
+            SetExposureAndGain(app, app.ExposureEditField.Value, app.GainEditField.Value, 1);
+        end
+
+        % Callback function
+        function FileTreeDoubleClicked(app, event)
+            selected_node = event.InteractionInformation.Node;
+            if ~isempty(selected_node) && isequal(selected_node.NodeData, 'file')
+                % Retrieve the full file path associated with the selected file node
+                filePath = '';
+                fileName = selected_node.Text;
+                selected_node = selected_node.Parent;
+                while ~isempty(selected_node.NodeData)
+                    filePath = [selected_node.NodeData, '/', filePath];
+                    selected_node = selected_node.Parent;
+                end
+                % Read and display the content of the selected file
+                try
+                    file_path = [app.images_folder_path, '/', filePath, '/', fileName];
+                    raw_data = imread(file_path);
+                    imshow(raw_data, [0 1024], 'Parent', app.FileTIFViewer);
+                catch
+                    disp('Error reading the file.');
+                end
+            end
+        end
+
+        % Button pushed function: ReadyCamerasButton
+        function ReadyCamerasButtonPushed(app, event)
+            % Streams a number of photos to calibration/experiment folders.
+            cameras = {app.pi1, app.pi2, app.pi3, app.pi4};%, app.pi5, app.pi6, app.pi7, app.pi8, app.pi9, ...
+                %app.pi10, app.pi11, app.pi12, app.pi13, app.pi14, app.pi15, app.pi16, app.pi17, app.pi18};
+            num_photos = app.ofImagesEditField.Value;
+            test_type =  app.ImagingTypeDropDown.Value;
+
+            % Executes the desired test_type.
+            % Make sure there is image path.
+            if strcmp(app.images_folder_path, '')
+                EnterImageDir(app);
+            % Checkboard streams on tif viewer and is captured.
+            elseif strcmp(test_type, 'Checkerboard')
+                if size(app.Tree.SelectedNodes) == 0
+                    app.Tree.BackgroundColor = [0.85, 0.33, 0.10];
+                    pause(1);
+                    app.Tree.BackgroundColor = [1, 1, 1];
+                else
+                    calib_cameras = find(app.nodes);
+                    % Clear current checkerboard photos
+                    for i = calib_cameras
+                        curr_cam = sprintf('%s/Checkerboard/camera%d', app.images_folder_path, i);
+                        try
+                            rmdir(curr_cam, 's');
+                        catch
+                            % Camera files not made yet.
+                        end
+                    end
+                    % Make start button visible and usable
+                    %app.StartCheckerboardButton.Visibility = "on";
+                    %app.StartCheckerboardButton.Enable = "on";
+                    % Make intensity visible.
+                    %app.Intensity.Visible = "on";
+                    
+                    for j = calib_cameras
+                        for i = 1:num_photos
+                            img = GetImage(app, j);
+                            imshow(img', [0 1024], 'Parent', app.FileTIFViewer);
+                            app.Intensity.Text = sprintf('Max Intensity: %d', max(img(:)));
+                            drawnow;
+                            saveFolder = dirchk(app, sprintf('%s/%s/camera%d', app.images_folder_path, test_type, app.CameraEditField.Value));
+                            imwrite(uint16(img'), sprintf('%s/%04d.tif', saveFolder, i-1), 'tif');
+                        end
+                    end
+                    % % Take # of photos.
+                    % while i <= num_photos
+                    %     % If waiting, display but don't increment i
+                    %     img_disp = false;
+                    %     for j = calib_cameras
+                    %         img = GetImage(app, j);
+                    %         % Disp first image only
+                    %         if ~img_disp
+                    %             imshow(img', [0 1024], 'Parent', app.FileTIFViewer);
+                    %             app.Intensity.Text = sprintf('Max Intensity: %d', max(img(:)));
+                    %             drawnow;
+                    %             img_disp = true;
+                    %         end
+                    %         % Save images and increment photo count.
+                    %         saveFolder = dirchk(app, sprintf('%s/%s/camera%d', app.images_folder_path, test_type, app.CameraEditField.Value));
+                    %         imwrite(uint16(img'), sprintf('%s/%04d.tif', saveFolder, i), 'tif');
+                    %         i = i + 1;
+                    %     end
+                    % end
+                    % Make button invisible and useless.
+                    %app.StartCheckerboardButton.Visibility = "off";
+                    %app.StartCheckerboardButton.Enable = "off";
+                    % Make intensity label not visible
+                    %app.Intensity.Visible = "off";
+                    % Back to waiting
+                    %app.waiting = true;
+                end
+                disp('All cameras finished.');
+            % Cylinder and experiment are captured without a live view.
+            else
+                % Get last folder name for test_type 
+                foldContents = dir(sprintf('%s/%s',app.images_folder_path, test_type));
+                subFolders = foldContents([foldContents.isdir]);
+                if size(subFolders) > 2
+                    test_numbers = {subFolders(3:end).name};
+                    newNum = str2double(test_numbers{end}) + 1;
+                    %Create new folder for test
+                    testFolder = dirchk(app, sprintf('%s/%s/%d',app.images_folder_path, test_type, newNum));
+                else
+                    newNum = 1;
+                    testFolder = dirchk(app, sprintf('%s/%s/%d',app.images_folder_path, test_type, newNum));
+                end
+
+
+                % Change raw_photo.sh on Pis
+                path = 'raw_photo.sh';
+                fID = fopen(path ,'W');
+                fprintf(fID, ['v4l2-ctl -d /dev/video0 --set-fmt-video=width=1280,height=800,pixelformat="Y10 "\n' ...
+                    'v4l2-ctl -d /dev/video0 --stream-mmap --stream-to=/home/afdl/Documents/%s/camera.raw --stream-count=%d'], test_type, num_photos);
+                fclose(fID);
+                for i = 1:length(cameras)
+                    putFile(cameras{i}, 'raw_photo.sh', '/home/afdl/Documents/raw_photo.sh')
+                end
+
+                % Capture images on all cameras.
+                if (strcmp(test_type, 'Cylinder'))
+                    disp('Cleaning Pi files')
+                    try
+                        for i = 1:length(cameras)
+                            system(cameras{i}, 'sudo rm /home/afdl/Documents/Cylinder/camera.raw');
+                        end
+                    catch
+                        % Cylinder and experiment folders already clean. Keep program
+                        % executing.
+                    end
+                    for i = 1:length(cameras)
+                        fprintf('Camera %d Sent\n', i);
+                        system(cameras{i}, 'sh /home/afdl/Documents/raw_photo.sh &');
+                        % batch(system(cameras{i}), 0, {'sh /home/afdl/Documents/raw_photo.sh &'});
+                    end
+                else
+                    disp('Cleaning Pi files')
+                    try
+                        for i = 1:length(cameras)
+                            system(cameras{i}, 'sudo rm /home/afdl/Documents/Experiment/camera.raw');
+                        end
+                    catch
+                        % Cylinder and experiment folders already clean. Keep program
+                        % executing.
+                    end
+                    % Send image command to each camera
+                    for i = 1:length(cameras)
+                        success = startsCamera(cameras{i}.DeviceAddress);
+                    end
+
+                    fprintf('All Cameras are ready for signal\nPress ENTER after signal has been sent\n');
+                    pause();
+                end
+
+                % Retrieve photos from all cameras.
+                for i = 1:length(cameras)
+                    saveFolder = dirchk(app, sprintf('%s/camera%d', testFolder, i));
+                    getFile(cameras{i}, sprintf('/home/afdl/Documents/%s/camera.raw', test_type), sprintf('%s/camera%d', testFolder, i));
+                    file_path = sprintf('%s/camera%d/camera.raw', testFolder, i);
+                    % Unpack images and save.
+                    fID = fopen(file_path);
+                    disp('Unpacking images.');
+                    if num_photos == 1
+                        rawImg = fread(fID, [app.width app.height], 'uint16');
+                        imwrite(uint16(rawImg'), sprintf('%s/%04d.tif', saveFolder, 1));
+                    else
+                        % Python script to unpack images.
+                        run_python(app, saveFolder, num_photos);
+                    end
+                    fclose(fID);
+                end
+            end
+            disp('Experiment over.');
+            % Erase and repopulate the tree.
+            redrawTree(app);
+        end
+
+        % Button pushed function: GoButton
+        function GoButtonPushed(app, event)
+            % Sets the path for the Images folder for the current user.
+            app.images_folder_path = strrep(app.ImagesDirectoryEditField.Value, '\', '/');
+            % Makes sure that image, cylinder, checkerboard, and experiment
+            % folders exist.
+            folder_path = dirchk(app, app.images_folder_path);
+            dirchk(app, sprintf('%s/Cylinder', folder_path));
+            dirchk(app, sprintf('%s/Checkerboard', folder_path));
+            dirchk(app, sprintf('%s/Experiment', folder_path));
+            % Displays the folder.
+            popTree(app, app.images_folder_path);
+            % Clear the image path text box.
+            app.ImagesDirectoryEditField.Value = "";
+        end
+
+        % Callback function: Tree
+        function TreeCheckedNodesChanged(app, event)
+            % Get checked nodes.
+            checkedNodes = app.Tree.CheckedNodes;
+            % Reset node values
+            app.nodes = zeros(1, 18);
+            try
+                % Set node values
+                if strcmp(checkedNodes(1).Text, 'All Cameras')
+                    app.nodes = ones(1, 18);
+                else
+                    for i = 1:length(checkedNodes)
+                        cur = checkedNodes(i);
+                        if (strlength(cur.Text) == 8)
+                            num = str2double(cur.Text(8));
+                        else
+                            num = str2double(cur.Text(8:9));
+                        end
+                        app.nodes(1, num) = 1;
+                    end
+                end
+            catch
+                % All nodes deselected.
+            end
+        end
+
+        % Button pushed function: StartCheckerboardButton
+        function StartCheckerboardButtonPushed(app, event)
+            %app.waiting = false;
+        end
+
+        % Button pushed function: AllEGButton
+        function AllEGButtonPushed(app, event)
+            SetExposureAndGain(app, app.ExposureEditField.Value, app.GainEditField.Value, 0);
+        end
+    end
+
+    % Component initialization
+    methods (Access = private)
+
+        % Create UIFigure and components
+        function createComponents(app)
+
+            % Create UIFigure and hide until all components are created
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Position = [100 100 1160 741];
+            app.UIFigure.Name = 'MATLAB App';
+
+            % Create FileTIFViewer
+            app.FileTIFViewer = uiaxes(app.UIFigure);
+            app.FileTIFViewer.XTick = [];
+            app.FileTIFViewer.YTick = [];
+            app.FileTIFViewer.Position = [671 1 490 741];
+
+            % Create CameraEditFieldLabel
+            app.CameraEditFieldLabel = uilabel(app.UIFigure);
+            app.CameraEditFieldLabel.HorizontalAlignment = 'right';
+            app.CameraEditFieldLabel.Position = [23 699 61 22];
+            app.CameraEditFieldLabel.Text = 'Camera #:';
+
+            % Create CameraEditField
+            app.CameraEditField = uieditfield(app.UIFigure, 'numeric');
+            app.CameraEditField.Limits = [1 18];
+            app.CameraEditField.Position = [99 699 100 22];
+            app.CameraEditField.Value = 1;
+
+            % Create LiveViewButton
+            app.LiveViewButton = uibutton(app.UIFigure, 'push');
+            app.LiveViewButton.ButtonPushedFcn = createCallbackFcn(app, @LiveViewButtonPushed, true);
+            app.LiveViewButton.Position = [62 664 100 23];
+            app.LiveViewButton.Text = 'Live View';
+
+            % Create GainEditFieldLabel
+            app.GainEditFieldLabel = uilabel(app.UIFigure);
+            app.GainEditFieldLabel.HorizontalAlignment = 'right';
+            app.GainEditFieldLabel.Position = [44 597 30 22];
+            app.GainEditFieldLabel.Text = 'Gain';
+
+            % Create ExposureEditFieldLabel
+            app.ExposureEditFieldLabel = uilabel(app.UIFigure);
+            app.ExposureEditFieldLabel.HorizontalAlignment = 'right';
+            app.ExposureEditFieldLabel.Position = [19 629 56 22];
+            app.ExposureEditFieldLabel.Text = 'Exposure';
+
+            % Create GainEditField
+            app.GainEditField = uieditfield(app.UIFigure, 'numeric');
+            app.GainEditField.Limits = [0 Inf];
+            app.GainEditField.Position = [89 597 100 22];
+            app.GainEditField.Value = 25;
+
+            % Create ExposureEditField
+            app.ExposureEditField = uieditfield(app.UIFigure, 'numeric');
+            app.ExposureEditField.Limits = [0 Inf];
+            app.ExposureEditField.Position = [90 629 100 22];
+            app.ExposureEditField.Value = 3000;
+
+            % Create OnlyLiveEGButton
+            app.OnlyLiveEGButton = uibutton(app.UIFigure, 'push');
+            app.OnlyLiveEGButton.ButtonPushedFcn = createCallbackFcn(app, @OnlyLiveEGButtonPushed, true);
+            app.OnlyLiveEGButton.Position = [62 566 100 23];
+            app.OnlyLiveEGButton.Text = 'Only Live E&G';
+
+            % Create ofImagesEditFieldLabel
+            app.ofImagesEditFieldLabel = uilabel(app.UIFigure);
+            app.ofImagesEditFieldLabel.HorizontalAlignment = 'right';
+            app.ofImagesEditFieldLabel.Position = [8 89 68 22];
+            app.ofImagesEditFieldLabel.Text = '# of Images';
+
+            % Create ofImagesEditField
+            app.ofImagesEditField = uieditfield(app.UIFigure, 'numeric');
+            app.ofImagesEditField.Limits = [1 Inf];
+            app.ofImagesEditField.Position = [91 89 100 22];
+            app.ofImagesEditField.Value = 1;
+
+            % Create ReadyCamerasButton
+            app.ReadyCamerasButton = uibutton(app.UIFigure, 'push');
+            app.ReadyCamerasButton.ButtonPushedFcn = createCallbackFcn(app, @ReadyCamerasButtonPushed, true);
+            app.ReadyCamerasButton.Position = [53 51 102 23];
+            app.ReadyCamerasButton.Text = 'Ready Cameras';
+
+            % Create FileTree
+            app.FileTree = uitree(app.UIFigure);
+            app.FileTree.Position = [225 38 414 683];
+
+            % Create ImagingTypeDropDownLabel
+            app.ImagingTypeDropDownLabel = uilabel(app.UIFigure);
+            app.ImagingTypeDropDownLabel.HorizontalAlignment = 'right';
+            app.ImagingTypeDropDownLabel.Position = [2 121 77 22];
+            app.ImagingTypeDropDownLabel.Text = 'Imaging Type';
+
+            % Create ImagingTypeDropDown
+            app.ImagingTypeDropDown = uidropdown(app.UIFigure);
+            app.ImagingTypeDropDown.Items = {'Checkerboard', 'Cylinder', 'Experiment'};
+            app.ImagingTypeDropDown.Position = [94 121 114 22];
+            app.ImagingTypeDropDown.Value = 'Checkerboard';
+
+            % Create ImagesDirectoryEditFieldLabel
+            app.ImagesDirectoryEditFieldLabel = uilabel(app.UIFigure);
+            app.ImagesDirectoryEditFieldLabel.BackgroundColor = [1 1 1];
+            app.ImagesDirectoryEditFieldLabel.HorizontalAlignment = 'right';
+            app.ImagesDirectoryEditFieldLabel.Position = [268 51 99 22];
+            app.ImagesDirectoryEditFieldLabel.Text = 'Images Directory:';
+
+            % Create ImagesDirectoryEditField
+            app.ImagesDirectoryEditField = uieditfield(app.UIFigure, 'text');
+            app.ImagesDirectoryEditField.Position = [382 51 100 22];
+
+            % Create GoButton
+            app.GoButton = uibutton(app.UIFigure, 'push');
+            app.GoButton.ButtonPushedFcn = createCallbackFcn(app, @GoButtonPushed, true);
+            app.GoButton.Position = [494 51 56 23];
+            app.GoButton.Text = 'Go';
+
+            % Create Tree
+            app.Tree = uitree(app.UIFigure, 'checkbox');
+            app.Tree.BackgroundColor = [0.9608 0.9608 0.9608];
+            app.Tree.Position = [36 193 150 300];
+
+            % Create AllCamerasNode
+            app.AllCamerasNode = uitreenode(app.Tree);
+            app.AllCamerasNode.Text = 'All Cameras';
+
+            % Create Camera1Node
+            app.Camera1Node = uitreenode(app.AllCamerasNode);
+            app.Camera1Node.Text = 'Camera 1';
+
+            % Create Camera2Node
+            app.Camera2Node = uitreenode(app.AllCamerasNode);
+            app.Camera2Node.Text = 'Camera 2';
+
+            % Create Camera3Node
+            app.Camera3Node = uitreenode(app.AllCamerasNode);
+            app.Camera3Node.Text = 'Camera 3';
+
+            % Create Camera4Node
+            app.Camera4Node = uitreenode(app.AllCamerasNode);
+            app.Camera4Node.Text = 'Camera 4';
+
+            % Create Camera5Node
+            app.Camera5Node = uitreenode(app.AllCamerasNode);
+            app.Camera5Node.Text = 'Camera 5';
+
+            % Create Camera6Node
+            app.Camera6Node = uitreenode(app.AllCamerasNode);
+            app.Camera6Node.Text = 'Camera 6';
+
+            % Create Camera7Node
+            app.Camera7Node = uitreenode(app.AllCamerasNode);
+            app.Camera7Node.Text = 'Camera 7';
+
+            % Create Camera8Node
+            app.Camera8Node = uitreenode(app.AllCamerasNode);
+            app.Camera8Node.Text = 'Camera 8';
+
+            % Create Camera9Node
+            app.Camera9Node = uitreenode(app.AllCamerasNode);
+            app.Camera9Node.Text = 'Camera 9';
+
+            % Create Camera10Node
+            app.Camera10Node = uitreenode(app.AllCamerasNode);
+            app.Camera10Node.Text = 'Camera 10';
+
+            % Create Camera11Node
+            app.Camera11Node = uitreenode(app.AllCamerasNode);
+            app.Camera11Node.Text = 'Camera 11';
+
+            % Create Camera12Node
+            app.Camera12Node = uitreenode(app.AllCamerasNode);
+            app.Camera12Node.Text = 'Camera 12';
+
+            % Create Camera13Node
+            app.Camera13Node = uitreenode(app.AllCamerasNode);
+            app.Camera13Node.Text = 'Camera 13';
+
+            % Create Camera14Node
+            app.Camera14Node = uitreenode(app.AllCamerasNode);
+            app.Camera14Node.Text = 'Camera 14';
+
+            % Create Camera15Node
+            app.Camera15Node = uitreenode(app.AllCamerasNode);
+            app.Camera15Node.Text = 'Camera 15';
+
+            % Create Camera16Node
+            app.Camera16Node = uitreenode(app.AllCamerasNode);
+            app.Camera16Node.Text = 'Camera 16';
+
+            % Create Camera17Node
+            app.Camera17Node = uitreenode(app.AllCamerasNode);
+            app.Camera17Node.Text = 'Camera 17';
+
+            % Create Camera18Node
+            app.Camera18Node = uitreenode(app.AllCamerasNode);
+            app.Camera18Node.Text = 'Camera 18';
+
+            % Assign Checked Nodes
+            app.Tree.CheckedNodesChangedFcn = createCallbackFcn(app, @TreeCheckedNodesChanged, true);
+
+            % Create CheckerboardCamerasLabel
+            app.CheckerboardCamerasLabel = uilabel(app.UIFigure);
+            app.CheckerboardCamerasLabel.FontSize = 14;
+            app.CheckerboardCamerasLabel.Position = [33 501 158 22];
+            app.CheckerboardCamerasLabel.Text = 'Checkerboard Cameras:';
+
+            % Create AllEGButton
+            app.AllEGButton = uibutton(app.UIFigure, 'push');
+            app.AllEGButton.ButtonPushedFcn = createCallbackFcn(app, @AllEGButtonPushed, true);
+            app.AllEGButton.Position = [61 536 100 23];
+            app.AllEGButton.Text = 'All E&G';
+
+            % Create StartCheckerboardButton
+            app.StartCheckerboardButton = uibutton(app.UIFigure, 'push');
+            app.StartCheckerboardButton.ButtonPushedFcn = createCallbackFcn(app, @StartCheckerboardButtonPushed, true);
+            app.StartCheckerboardButton.BackgroundColor = [0.9608 0.9608 0.9608];
+            app.StartCheckerboardButton.Enable = 'off';
+            app.StartCheckerboardButton.Visible = 'off';
+            app.StartCheckerboardButton.Position = [894 29 119 23];
+            app.StartCheckerboardButton.Text = 'Start Checkerboard';
+
+            % Create Intensity
+            app.Intensity = uilabel(app.UIFigure);
+            app.Intensity.FontSize = 14;
+            app.Intensity.Visible = 'off';
+            app.Intensity.Position = [934 68 39 22];
+
+            % Show the figure after all components are created
+            app.UIFigure.Visible = 'on';
+        end
+    end
+
+    % App creation and deletion
+    methods (Access = public)
+
+        % Construct app
+        function app = cameras
+
+            % Create UIFigure and components
+            createComponents(app)
+
+            % Register the app with App Designer
+            registerApp(app, app.UIFigure)
+
+            % Execute the startup function
+            runStartupFcn(app, @startupFcn)
+
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % Code that executes before app deletion
+        function delete(app)
+
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end
