@@ -15,7 +15,7 @@ but I think the GUI and pi work ended up relatively good. <br>
 &emsp;a. Properties <br>
 &emsp;b. Functions <br>
 &emsp;c. Callback Functions (occur when button/checkbox pushed/changed) <br>
-4. Pitfalls <br>
+3. Pitfalls <br>
 <br>
 1. Setup <br>
 &emsp;a. MATLAB Side: <br>
@@ -26,30 +26,30 @@ but I think the GUI and pi work ended up relatively good. <br>
 &emsp;&emsp;&emsp;the array can be seen on lines 91, 139, and 319. Also, the order that the Raspi objects are placed in the cameras array matters. 
 &emsp;&emsp;&emsp;When selecting the camera number the index of your Raspi object is used. So camera #1 will correspond with the first camera in your cameras list.
 &emsp;&emsp;II. Image Folder 
-        Make sure that you have created a folder (it can be anywhere) that you want to store the images in. You will need this folder for storing <br>
-        the images taken during the execution of calibration/experiment runs. 
-     III. Python Script 
-         Make sure that the computer being used has the Python from the Microsoft store downloaded. Make sure that the opencv library is installed on 
-         the computer. This can be done in the command prompt with 'python' (to install python from the MS store), and then 'pip install opencv-python'. 
-         The python script should be named 'showImg.py' and in the same directory as the cameras.mlapp (MATLAB GUI). If this is not the case, please provide 
-         the custom file local under the py_script variable on line 66. 
-     IV. On Startup 
-         Provide the image folder path under the "image directory" box and press "Go". Do not have any whitespace or quotation marks surrounding your file
-         path. If the app successfully launched and you have entered an image directory then the app is ready to go.
-  b. Raspberry Pi Side:
-    I. Setting Up Pis
-       Getting the Pis to work with MATLAB and the Raspi library might provide difficulties at first. Just keep on installing those libraries when it throws
-       errors until it doesn't anymore. Run 'pip install $library_name' on the Raspberry Pi to install the library MATLAB wants. For the setup that is used with
-       the app, the Raspberry Pi camera should be using the pixel format Y10, with a width of 1280 and a height of 800. There should also be directories named "Live",
-       "Cylinder", and "Experiment" inside of the "/home/afdl/Documents" folder on the Pis. If there are not, log into the Pi then run "cd ~/Documents" followed by
-       "mkdir Live", "mkdir Cylinder" and "mkdir Experiment".
-   II. Image Files on Pis
-       The Pis store images taken from the camera either in the "Live", "Cylinder", or "Experiment" folder based on what is being used. During the live camera
-       view of the app the image is stored in "/home/afdl/Documents/Live" as "test.tif". During checkerboard, the same system is used, but the files are saved
-       after retrieval from the "Live" directory on the Pi. For Cylinder and Experiment, there is a set number of photos streamed to a RAW file. The file is saved
-       as "camera.raw" under the respective directory.
-   
-2. Functionality
+&emsp;&emsp;&emsp;Make sure that you have created a folder (it can be anywhere) that you want to store the images in. You will need this folder for storing <br>
+&emsp;&emsp;&emsp;the images taken during the execution of calibration/experiment runs. 
+&emsp;&emspIII. Python Script 
+&emsp;&emsp;&emsp;Make sure that the computer being used has the Python from the Microsoft store downloaded. Make sure that the opencv library is installed on 
+&emsp;&emsp;&emsp;the computer. This can be done in the command prompt with 'python' (to install python from the MS store), and then 'pip install opencv-python'. 
+&emsp;&emsp;&emsp;The python script should be named 'showImg.py' and in the same directory as the cameras.mlapp (MATLAB GUI). If this is not the case, please provide 
+&emsp;&emsp;&emsp;the custom file local under the py_script variable on line 66. 
+&emsp;&emsp;IV. On Startup 
+&emsp;&emsp;&emsp;Provide the image folder path under the "image directory" box and press "Go". Do not have any whitespace or quotation marks surrounding your file
+&emsp;&emsp;&emsp;path. If the app successfully launched and you have entered an image directory then the app is ready to go.
+&emsp;b. Raspberry Pi Side:
+&emsp;&emsp;I. Setting Up Pis
+&emsp;&emsp;&emsp;Getting the Pis to work with MATLAB and the Raspi library might provide difficulties at first. Just keep on installing those libraries when it throws
+&emsp;&emsp;&emsp;errors until it doesn't anymore. Run 'pip install $library_name' on the Raspberry Pi to install the library MATLAB wants. For the setup that is used with
+&emsp;&emsp;&emsp;the app, the Raspberry Pi camera should be using the pixel format Y10, with a width of 1280 and a height of 800. There should also be directories named "Live",
+&emsp;&emsp;&emsp;"Cylinder", and "Experiment" inside of the "/home/afdl/Documents" folder on the Pis. If there are not, log into the Pi then run "cd ~/Documents" followed by
+&emsp;&emsp;&emsp;"mkdir Live", "mkdir Cylinder" and "mkdir Experiment".
+&emsp;&emsp;II. Image Files on Pis
+&emsp;&emsp;&emsp;The Pis store images taken from the camera either in the "Live", "Cylinder", or "Experiment" folder based on what is being used. During the live camera
+&emsp;&emsp;&emsp;view of the app the image is stored in "/home/afdl/Documents/Live" as "test.tif". During checkerboard, the same system is used, but the files are saved
+&emsp;&emsp;&emsp;after retrieval from the "Live" directory on the Pi. For Cylinder and Experiment, there is a set number of photos streamed to a RAW file. The file is saved
+&emsp;&emsp;&emsp;as "camera.raw" under the respective directory.
+<br>
+3. Functionality
    a. Properties
        The app comes with many properties, each stored from lines 4 through 85. There are properties that correspond to app components which just establish all visual aspects
        of the app. Next, there are all the properties that correspond to the live view popout or underlying components. The first 'matlab.ui' properties establish the popout
