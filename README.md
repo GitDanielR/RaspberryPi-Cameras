@@ -2,39 +2,38 @@ This was work done for the Advanced Flow Diagnostics Laboratory. I worked in the
 This was a totally new venture for me and I enjoyed it a lot. I had limited experience with MATLAB and none with Raspberry Pis 
 but I think the GUI and pi work ended up relatively good. <br>
 <br>
-<br>
-1. Setup
-   a. MATLAB GUI
-     I.   Raspberry Pi Cameras
-     II.  Image Folder
-     III. Python script
-     IV.  On Startup
-   b. Raspberry Pi
-     I.   Setting Up Pis
-     II.  Image Files on Pis
-2. Functionality
-   a. Properties
-   b. Functions
-   c. Callback Functions (occur when button/checkbox pushed/changed)
-4. Pitfalls
+1. Setup <br>
+   a. MATLAB GUI <br>
+     I.   Raspberry Pi Cameras <br>
+     II.  Image Folder <br>
+     III. Python script <br>
+     IV.  On Startup <br>
+   b. Raspberry Pi <br>
+     I.   Setting Up Pis <br>
+     II.  Image Files on Pis <br>
+2. Functionality <br>
+   a. Properties <br>
+   b. Functions <br>
+   c. Callback Functions (occur when button/checkbox pushed/changed) <br>
+4. Pitfalls <br>
 
-1. Setup
-   a. MATLAB Side:
-     I. Raspberry Pi Cameras
-        To set up the MATLAB GUI so that it is ready to use there are a few things that need to be edited. Make sure to set up Raspi
-        connections to all cameras at the top of the GUI as app.pi_n = raspi('ip', 'username/hostname', 'password'). Then make sure that all lines
-        containing the array of cameras (cameras = {app.pi1, ..., app.pi_n};) contains all cameras being currently used. As of right now,
-        the array can be seen on lines 91, 139, and 319. Also, the order that the Raspi objects are placed in the cameras array matters.
-        When selecting the camera number the index of your Raspi object is used. So camera #1 will correspond with the first camera in your cameras list.
-     II. Image Folder
-        Make sure that you have created a folder (it can be anywhere) that you want to store the images in. You will need this folder for storing
-        the images taken during the execution of calibration/experiment runs.
-     III. Python Script
-         Make sure that the computer being used has the Python from the Microsoft store downloaded. Make sure that the opencv library is installed on
-         the computer. This can be done in the command prompt with 'python' (to install python from the MS store), and then 'pip install opencv-python'.
-         The python script should be named 'showImg.py' and in the same directory as the cameras.mlapp (MATLAB GUI). If this is not the case, please provide
-         the custom file local under the py_script variable on line 66.
-     IV. On Startup
+1. Setup <br>
+   a. MATLAB Side: <br>
+     I. Raspberry Pi Cameras <br>
+        To set up the MATLAB GUI so that it is ready to use there are a few things that need to be edited. Make sure to set up Raspi <br>
+        connections to all cameras at the top of the GUI as app.pi_n = raspi('ip', 'username/hostname', 'password'). Then make sure that all lines <br>
+        containing the array of cameras (cameras = {app.pi1, ..., app.pi_n};) contains all cameras being currently used. As of right now, <br>
+        the array can be seen on lines 91, 139, and 319. Also, the order that the Raspi objects are placed in the cameras array matters. <br>
+        When selecting the camera number the index of your Raspi object is used. So camera #1 will correspond with the first camera in your cameras list.<br>
+     II. Image Folder <br>
+        Make sure that you have created a folder (it can be anywhere) that you want to store the images in. You will need this folder for storing <br>
+        the images taken during the execution of calibration/experiment runs. <br>
+     III. Python Script <br>
+         Make sure that the computer being used has the Python from the Microsoft store downloaded. Make sure that the opencv library is installed on <br>
+         the computer. This can be done in the command prompt with 'python' (to install python from the MS store), and then 'pip install opencv-python'. <br>
+         The python script should be named 'showImg.py' and in the same directory as the cameras.mlapp (MATLAB GUI). If this is not the case, please provide <br>
+         the custom file local under the py_script variable on line 66. <br>
+     IV. On Startup <br>
          Provide the image folder path under the "image directory" box and press "Go". Do not have any whitespace or quotation marks surrounding your file
          path. If the app successfully launched and you have entered an image directory then the app is ready to go.
   b. Raspberry Pi Side:
