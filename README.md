@@ -16,7 +16,7 @@ but I think the GUI and pi work ended up relatively good. <br>
 &emsp;b. Functions <br>
 &emsp;c. Callback Functions (occur when button/checkbox pushed/changed) <br>
 4. Pitfalls <br>
-
+<br>
 1. Setup <br>
 &emsp;a. MATLAB Side: <br>
 &emsp;&emsp;I. Raspberry Pi Cameras <br>
