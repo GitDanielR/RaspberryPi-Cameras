@@ -3,29 +3,29 @@ This was a totally new venture for me and I enjoyed it a lot. I had limited expe
 but I think the GUI and pi work ended up relatively good. <br>
 <br>
 1. Setup <br>
-   a. MATLAB GUI <br>
-     I.   Raspberry Pi Cameras <br>
-     II.  Image Folder <br>
-     III. Python script <br>
-     IV.  On Startup <br>
-   b. Raspberry Pi <br>
-     I.   Setting Up Pis <br>
-     II.  Image Files on Pis <br>
+&emsp;a. MATLAB GUI <br>
+&emsp;&emsp;I.   Raspberry Pi Cameras <br>
+&emsp;&emsp;II.  Image Folder <br>
+&emsp;&emsp;III. Python script <br>
+&emsp;&emsp;IV.  On Startup <br>
+&emsp;b. Raspberry Pi <br>
+&emsp;&emsp;I.   Setting Up Pis <br>
+&emsp;&emsp;II.  Image Files on Pis <br>
 2. Functionality <br>
-   a. Properties <br>
-   b. Functions <br>
-   c. Callback Functions (occur when button/checkbox pushed/changed) <br>
+&emsp;a. Properties <br>
+&emsp;b. Functions <br>
+&emsp;c. Callback Functions (occur when button/checkbox pushed/changed) <br>
 4. Pitfalls <br>
 
 1. Setup <br>
-   a. MATLAB Side: <br>
-     I. Raspberry Pi Cameras <br>
-        To set up the MATLAB GUI so that it is ready to use there are a few things that need to be edited. Make sure to set up Raspi <br>
-        connections to all cameras at the top of the GUI as app.pi_n = raspi('ip', 'username/hostname', 'password'). Then make sure that all lines <br>
-        containing the array of cameras (cameras = {app.pi1, ..., app.pi_n};) contains all cameras being currently used. As of right now, <br>
-        the array can be seen on lines 91, 139, and 319. Also, the order that the Raspi objects are placed in the cameras array matters. <br>
-        When selecting the camera number the index of your Raspi object is used. So camera #1 will correspond with the first camera in your cameras list.<br>
-     II. Image Folder <br>
+&emsp;a. MATLAB Side: <br>
+&emsp;&emsp;I. Raspberry Pi Cameras <br>
+&emsp;&emsp;&emsp;To set up the MATLAB GUI so that it is ready to use there are a few things that need to be edited. Make sure to set up Raspi <br>
+&emsp;&emsp;&emsp;connections to all cameras at the top of the GUI as app.pi_n = raspi('ip', 'username/hostname', 'password'). Then make sure that all lines <br>
+&emsp;&emsp;&emsp;containing the array of cameras (cameras = {app.pi1, ..., app.pi_n};) contains all cameras being currently used. As of right now, <br>
+&emsp;&emsp;&emsp;the array can be seen on lines 91, 139, and 319. Also, the order that the Raspi objects are placed in the cameras array matters. <br>
+&emsp;&emsp;&emsp;When selecting the camera number the index of your Raspi object is used. So camera #1 will correspond with the first camera in your cameras list.<br>
+&emsp;&emsp;II. Image Folder <br>
         Make sure that you have created a folder (it can be anywhere) that you want to store the images in. You will need this folder for storing <br>
         the images taken during the execution of calibration/experiment runs. <br>
      III. Python Script <br>
